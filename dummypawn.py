@@ -12,6 +12,10 @@ from colorama import init, Fore
 
 init(autoreset=True)
 
+# ─── Imports for Dummy HTTP Server ──────────────────────────────────────────
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
 # ─── Configuration ─────────────────────────────
 BOT_TOKEN = os.getenv("BOT_TOKEN", "BOT_TOKEN")
 SERPER_API_KEY = os.getenv("SERPER_API_KEY", "SERPER_API_KEY")
@@ -634,6 +638,34 @@ async def set_bot_commands():
     await bot.set_my_commands(commands)
     log_success("Bot commands set successfully")
 
+# ─── Dummy HTTP Server for Deployment Compatibility ────────────────────────
+class DummyHandler(BaseHTTPRequestHandler):
+    """Simple HTTP handler for health checks and deployment compatibility"""
+
+    def do_GET(self):
+        """Handle GET requests"""
+        self.send_response(200)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        self.wfile.write(b"Telegram bot is running and healthy!")
+
+    def do_HEAD(self):
+        """Handle HEAD requests"""
+        self.send_response(200)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+
+    def log_message(self, format, *args):
+        """Suppress HTTP server logs"""
+        pass
+
+def start_dummy_server():
+    """Start HTTP server for deployment platform compatibility"""
+    port = int(os.environ.get("PORT", 8000))
+    server = HTTPServer(("0.0.0.0", port), DummyHandler)
+    print(f"🌐 HTTP server listening on port {port}")
+    server.serve_forever()
+
 async def main():
     """Main function to start the bot"""
     log_info("Starting Dummy Pawn Bot...")
@@ -651,4 +683,7 @@ async def main():
         await bot.session.close()
 
 if __name__ == "__main__":
+    # Start dummy HTTP server in background thread for deployment compatibility
+    threading.Thread(target=start_dummy_server, daemon=True).start()
+    
     asyncio.run(main())
