@@ -20,7 +20,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 BOT_TOKEN = os.getenv("BOT_TOKEN", "BOT_TOKEN")
 SERPER_API_KEY = os.getenv("SERPER_API_KEY", "SERPER_API_KEY")
 UPDATES_CHANNEL = "https://t.me/WorkGlows"
-SUPPORT_GROUP = "https://t.me/TheCryptoElders"
+SUPPORT_GROUP = "https://t.me/SoulMeetsHQ"
 BOT_USERNAME = "DummyPawnBot"
 
 SERPER_URLS = {
