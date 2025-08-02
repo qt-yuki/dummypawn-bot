@@ -2,6 +2,7 @@ import aiohttp
 import logging
 import asyncio
 import os
+import random
 from datetime import datetime, timedelta
 from aiogram import Bot, Dispatcher, Router, types
 from aiogram.enums import ParseMode, ChatType
@@ -23,6 +24,50 @@ UPDATES_CHANNEL = "https://t.me/WorkGlows"
 SUPPORT_GROUP = "https://t.me/SoulMeetsHQ"
 BOT_USERNAME = "DummyPawnBot"
 
+# Random Images for Start Command
+IMAGES = [
+    "https://ik.imagekit.io/asadofc/Images1.png",
+    "https://ik.imagekit.io/asadofc/Images2.png",
+    "https://ik.imagekit.io/asadofc/Images3.png",
+    "https://ik.imagekit.io/asadofc/Images4.png",
+    "https://ik.imagekit.io/asadofc/Images5.png",
+    "https://ik.imagekit.io/asadofc/Images6.png",
+    "https://ik.imagekit.io/asadofc/Images7.png",
+    "https://ik.imagekit.io/asadofc/Images8.png",
+    "https://ik.imagekit.io/asadofc/Images9.png",
+    "https://ik.imagekit.io/asadofc/Images10.png",
+    "https://ik.imagekit.io/asadofc/Images11.png",
+    "https://ik.imagekit.io/asadofc/Images12.png",
+    "https://ik.imagekit.io/asadofc/Images13.png",
+    "https://ik.imagekit.io/asadofc/Images14.png",
+    "https://ik.imagekit.io/asadofc/Images15.png",
+    "https://ik.imagekit.io/asadofc/Images16.png",
+    "https://ik.imagekit.io/asadofc/Images17.png",
+    "https://ik.imagekit.io/asadofc/Images18.png",
+    "https://ik.imagekit.io/asadofc/Images19.png",
+    "https://ik.imagekit.io/asadofc/Images20.png",
+    "https://ik.imagekit.io/asadofc/Images21.png",
+    "https://ik.imagekit.io/asadofc/Images22.png",
+    "https://ik.imagekit.io/asadofc/Images23.png",
+    "https://ik.imagekit.io/asadofc/Images24.png",
+    "https://ik.imagekit.io/asadofc/Images25.png",
+    "https://ik.imagekit.io/asadofc/Images26.png",
+    "https://ik.imagekit.io/asadofc/Images27.png",
+    "https://ik.imagekit.io/asadofc/Images28.png",
+    "https://ik.imagekit.io/asadofc/Images29.png",
+    "https://ik.imagekit.io/asadofc/Images30.png",
+    "https://ik.imagekit.io/asadofc/Images31.png",
+    "https://ik.imagekit.io/asadofc/Images32.png",
+    "https://ik.imagekit.io/asadofc/Images33.png",
+    "https://ik.imagekit.io/asadofc/Images34.png",
+    "https://ik.imagekit.io/asadofc/Images35.png",
+    "https://ik.imagekit.io/asadofc/Images36.png",
+    "https://ik.imagekit.io/asadofc/Images37.png",
+    "https://ik.imagekit.io/asadofc/Images38.png",
+    "https://ik.imagekit.io/asadofc/Images39.png",
+    "https://ik.imagekit.io/asadofc/Images40.png"
+]
+
 SERPER_URLS = {
     "web": "https://google.serper.dev/search",
     "img": "https://google.serper.dev/images",
@@ -30,45 +75,66 @@ SERPER_URLS = {
     "vid": "https://google.serper.dev/videos"
 }
 
-# Message Dictionaries
+# Message Dictionaries - Shortened
 START_MESSAGES = {
     "welcome": (
-        f"<b>👋 Welcome to <u>Dummy Pawn</u>!</b>\n\n"
-        f"<i>I'm your personal assistant for quick and accurate searches.</i>\n\n"
-        f"<b>🔍 Available Commands:</b>\n"
+        f"<b>👋 Welcome to Dummy Pawn!</b>\n\n"
+        f"<i>Your personal search assistant</i>\n\n"
+        f"<b>Commands:</b>\n"
         f"• <code>/web [query]</code> - Web search\n"
         f"• <code>/img [query]</code> - Image search\n"
         f"• <code>/vid [query]</code> - Video search\n"
         f"• <code>/news [query]</code> - News search\n\n"
-        f"<b>💡 Smart Features:</b>\n"
-        f"• In groups, use 'dummy [query] [type]' (e.g., 'dummy cats image')\n"
-        f"• Pagination with Previous/Next buttons\n"
-        f"• Rate limiting: 3 searches per minute\n"
-        f"• Individual session management per user per chat\n\n"
-        f"<b>📱 Get Started:</b>\n"
-        f"Try <code>/web python programming</code> or add me to your group!"
+        f"<b>Groups:</b> Use 'dummy [query] [type]'\n"
+        f"<b>Private:</b> Just type your query\n\n"
+        f"Try: <code>/web python</code> or add me to groups!"
     )
 }
 
 HELP_MESSAGES = {
-    "help_text": (
-        f"<b>🆘 Help - Dummy Pawn Bot</b>\n\n"
-        f"<b>🔍 Search Commands:</b>\n"
-        f"• <code>/web [query]</code> - Search the web\n"
-        f"• <code>/img [query]</code> - Search for images\n"
-        f"• <code>/vid [query]</code> - Search for videos\n"
-        f"• <code>/news [query]</code> - Search for news\n\n"
-        f"<b>🤖 Smart Triggers:</b>\n"
-        f"• <b>Private chats:</b> Just type your query + search type\n"
-        f"  Example: <code>cats image</code> or <code>python programming</code>\n\n"
-        f"• <b>Group chats:</b> Use 'dummy' prefix\n"
-        f"  Example: <code>dummy cats image</code> or <code>dummy bitcoin news</code>\n\n"
-        f"<b>🎯 Features:</b>\n"
-        f"• Navigate results with Previous/Next buttons\n"
-        f"• Each user has separate search sessions per chat\n"
-        f"• Rate limiting: 3 searches per minute\n"
-        f"• Rich media display with thumbnails"
+    "basic": (
+        f"<b>🆘 Help - Dummy Pawn</b>\n\n"
+        f"<b>Quick Commands:</b>\n"
+        f"• <code>/web [query]</code> - Web search\n"
+        f"• <code>/img [query]</code> - Images\n"
+        f"• <code>/vid [query]</code> - Videos\n"
+        f"• <code>/news [query]</code> - News\n\n"
+        f"<b>Smart Usage:</b>\n"
+        f"• <b>Private:</b> <code>cats image</code>\n"
+        f"• <b>Groups:</b> <code>dummy cats image</code>\n\n"
+        f"<i>Click expand for more details</i>"
+    ),
+    "expanded": (
+        f"<b>🆘 Help - Dummy Pawn</b>\n\n"
+        f"<b>All Features:</b>\n"
+        f"• Navigate with Previous/Next buttons\n"
+        f"• Rate limit: 3 searches per minute\n"
+        f"• Individual sessions per chat\n"
+        f"• Rich media display\n\n"
+        f"<b>Trigger Words:</b>\n"
+        f"Web: site, link, search, google\n"
+        f"Image: pic, photo, wallpaper, pfp\n"
+        f"Video: clip, movie, film, reel\n"
+        f"News: headline, update, breaking\n\n"
+        f"<i>Click minimize for basic view</i>"
     )
+}
+
+# Query Answer Messages
+QUERY_ANSWERS = {
+    "help_expanded": "📖 Showing detailed help",
+    "help_minimized": "📋 Showing basic help",
+    "help_updated": "✅ Help updated",
+    "help_same": "Already showing this view",
+    "help_error": "❌ Failed to update help"
+}
+
+# Trigger Words Dictionary for Easy Reference
+TRIGGER_WORDS = {
+    "web_triggers": ["web", "site", "website", "link", "search", "google"],
+    "img_triggers": ["image", "img", "pic", "picture", "photo", "wallpaper", "pfp", "dp"],
+    "vid_triggers": ["video", "vid", "clip", "movie", "film", "short", "reel"],
+    "news_triggers": ["news", "headline", "update", "report", "breaking", "alert"]
 }
 
 ERROR_MESSAGES = {
@@ -109,7 +175,9 @@ BUTTON_TEXTS = {
     "close": "Close",
     "updates": "Updates",
     "support": "Support",
-    "add_to_group": "Add Me To Your Group"
+    "add_to_group": "Add Me To Your Group",
+    "expand": "📖 Expand",
+    "minimize": "📋 Minimize"
 }
 
 BOT_COMMANDS = [
@@ -202,6 +270,21 @@ dp.include_router(router)
 user_search_cache = {}
 # Rate limit keyed by user_id for both private and group chats
 rate_limit = {}
+
+def get_help_keyboard(user_id: int, chat_id: int, is_expanded: bool = False):
+    """Generate help keyboard with expand/minimize button"""
+    if is_expanded:
+        callback_data = f"help_minimize_{user_id}_{chat_id}"
+        button_text = BUTTON_TEXTS["minimize"]
+    else:
+        callback_data = f"help_expand_{user_id}_{chat_id}"
+        button_text = BUTTON_TEXTS["expand"]
+    
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text=button_text, callback_data=callback_data)
+        ]
+    ])
 
 def get_inline_keyboard(user_id: int, chat_id: int):
     """Generate inline keyboard with callback_data including user_id and chat_id"""
@@ -347,20 +430,71 @@ async def send_result(msg: types.Message, mode: str, index: int = 0, query_overr
         await msg.answer(ERROR_MESSAGES["send_failed"], reply_to_message_id=msg.message_id)
 
 @router.callback_query(lambda c: c.data and (
-    c.data.startswith("next_") or c.data.startswith("prev_") or c.data.startswith("close_")
+    c.data.startswith("next_") or c.data.startswith("prev_") or c.data.startswith("close_") or
+    c.data.startswith("help_expand_") or c.data.startswith("help_minimize_")
 ))
 async def callback_handler(query: CallbackQuery):
-    """Handle pagination callbacks"""
+    """Handle pagination and help expand/minimize callbacks"""
     data = query.data or ""
     if not query.message or not query.from_user:
-        await query.answer(ERROR_MESSAGES["invalid_callback"], show_alert=True)
+        await query.answer(ERROR_MESSAGES["invalid_callback"])
         return
         
     log_info(f"Received callback: {data} from user {query.from_user.id} in chat {query.message.chat.id}")
+    
+    # Handle help expand/minimize callbacks
+    if data.startswith("help_expand_") or data.startswith("help_minimize_"):
+        parts = data.split("_")
+        if len(parts) != 4:
+            await query.answer(ERROR_MESSAGES["invalid_data"])
+            return
+            
+        action, expand_minimize, user_id_str, chat_id_str = parts
+        try:
+            user_id = int(user_id_str)
+            chat_id = int(chat_id_str)
+        except ValueError:
+            await query.answer(ERROR_MESSAGES["invalid_ids"])
+            return
+            
+        # Verify correct user and chat
+        if query.from_user.id != user_id:
+            await query.answer(ERROR_MESSAGES["wrong_user"])
+            return
+        
+        if query.message.chat.id != chat_id:
+            await query.answer(ERROR_MESSAGES["wrong_chat"])
+            return
+            
+        # Handle expand/minimize
+        try:
+            if expand_minimize == "expand":
+                new_text = HELP_MESSAGES["expanded"]
+                new_keyboard = get_help_keyboard(user_id, chat_id, is_expanded=True)
+                answer_msg = QUERY_ANSWERS["help_expanded"]
+            else:  # minimize
+                new_text = HELP_MESSAGES["basic"]
+                new_keyboard = get_help_keyboard(user_id, chat_id, is_expanded=False)
+                answer_msg = QUERY_ANSWERS["help_minimized"]
+                
+            await query.message.edit_text(new_text, reply_markup=new_keyboard)
+            await query.answer(answer_msg)
+            log_success(f"Help {expand_minimize}d for user {user_id}")
+            return
+            
+        except Exception as e:
+            if "message is not modified" in str(e):
+                await query.answer(QUERY_ANSWERS["help_same"])
+            else:
+                log_error(f"Failed to update help message: {e}")
+                await query.answer(QUERY_ANSWERS["help_error"])
+            return
+    
+    # Handle pagination callbacks (existing code)
     parts = data.split("_")
     if len(parts) != 3:
         log_warn(f"Unexpected callback_data format: {data}")
-        await query.answer(ERROR_MESSAGES["invalid_data"], show_alert=True)
+        await query.answer(ERROR_MESSAGES["invalid_data"])
         return
 
     action, user_id_str, chat_id_str = parts
@@ -369,17 +503,17 @@ async def callback_handler(query: CallbackQuery):
         chat_id = int(chat_id_str)
     except ValueError:
         log_warn(f"Non-integer IDs in callback_data: {data}")
-        await query.answer(ERROR_MESSAGES["invalid_ids"], show_alert=True)
+        await query.answer(ERROR_MESSAGES["invalid_ids"])
         return
 
     # Verify correct user and chat
     if query.from_user.id != user_id:
-        await query.answer(ERROR_MESSAGES["wrong_user"], show_alert=True)
+        await query.answer(ERROR_MESSAGES["wrong_user"])
         log_warn(f"User {query.from_user.id} tried to press button for user {user_id}")
         return
     
     if query.message.chat.id != chat_id:
-        await query.answer(ERROR_MESSAGES["wrong_chat"], show_alert=True)
+        await query.answer(ERROR_MESSAGES["wrong_chat"])
         log_warn(f"Callback for chat {chat_id} used in chat {query.message.chat.id}")
         return
 
@@ -401,7 +535,7 @@ async def callback_handler(query: CallbackQuery):
     cache_key = (user_id, chat_id)
     cache = user_search_cache.get(cache_key)
     if not cache:
-        await query.answer(ERROR_MESSAGES["no_cache"], show_alert=True)
+        await query.answer(ERROR_MESSAGES["no_cache"])
         log_warn(f"No cached search for user {user_id} in chat {chat_id} on callback {data}")
         return
 
@@ -415,13 +549,13 @@ async def callback_handler(query: CallbackQuery):
     if action == "next":
         new_index = index + 1
         if new_index >= len(results):
-            await query.answer(ERROR_MESSAGES["no_more"], show_alert=True)
+            await query.answer(ERROR_MESSAGES["no_more"])
             log_warn(f"User {user_id} reached end of results")
             return
     elif action == "prev":
         new_index = index - 1
         if new_index < 0:
-            await query.answer(ERROR_MESSAGES["first_result"], show_alert=True)
+            await query.answer(ERROR_MESSAGES["first_result"])
             log_warn(f"User {user_id} tried to go before first result")
             return
     else:
@@ -501,18 +635,36 @@ async def cmd_start(msg: types.Message):
             InlineKeyboardButton(text=BUTTON_TEXTS["add_to_group"], url=f"https://t.me/{BOT_USERNAME}?startgroup=true")
         ]
     ])
+    
+    # Select random image from the list
+    random_image = random.choice(IMAGES)
+    
     try:
-        await msg.answer(START_MESSAGES["welcome"], reply_markup=keyboard)
-        log_success(f"Start message sent to user {user_id}")
+        await msg.answer_photo(
+            photo=random_image,
+            caption=START_MESSAGES["welcome"], 
+            reply_markup=keyboard
+        )
+        log_success(f"Start message with random image sent to user {user_id}")
     except Exception as e:
-        log_error(f"Failed to send start message: {e}")
+        log_error(f"Failed to send start message with image: {e}")
+        # Fallback to text message if image fails
+        try:
+            await msg.answer(START_MESSAGES["welcome"], reply_markup=keyboard)
+            log_success(f"Start message (text fallback) sent to user {user_id}")
+        except Exception as e2:
+            log_error(f"Failed to send start message fallback: {e2}")
 
 @router.message(Command("help"))
 async def cmd_help(msg: types.Message):
     user_id = msg.from_user.id if msg.from_user else 0
+    chat_id = msg.chat.id
     log_info(f"Help command invoked by user {user_id}")
+    
+    keyboard = get_help_keyboard(user_id, chat_id, is_expanded=False)
+    
     try:
-        await msg.answer(HELP_MESSAGES["help_text"])
+        await msg.answer(HELP_MESSAGES["basic"], reply_markup=keyboard)
         log_success(f"Help message sent to user {user_id}")
     except Exception as e:
         log_error(f"Failed to send help message: {e}")
