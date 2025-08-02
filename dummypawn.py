@@ -12,11 +12,11 @@ from colorama import init, Fore
 
 init(autoreset=True)
 
-# ─── Imports for Dummy HTTP Server ──────────────────────────────────────────
+# Imports for Dummy HTTP Server
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-# ─── Configuration ─────────────────────────────
+# Configuration
 BOT_TOKEN = os.getenv("BOT_TOKEN", "BOT_TOKEN")
 SERPER_API_KEY = os.getenv("SERPER_API_KEY", "SERPER_API_KEY")
 UPDATES_CHANNEL = "https://t.me/WorkGlows"
@@ -28,6 +28,151 @@ SERPER_URLS = {
     "img": "https://google.serper.dev/images",
     "news": "https://google.serper.dev/news",
     "vid": "https://google.serper.dev/videos"
+}
+
+# Message Dictionaries
+START_MESSAGES = {
+    "welcome": (
+        f"<b>👋 Welcome to <u>Dummy Pawn</u>!</b>\n\n"
+        f"<i>I'm your personal assistant for quick and accurate searches.</i>\n\n"
+        f"<b>🔍 Available Commands:</b>\n"
+        f"• <code>/web [query]</code> - Web search\n"
+        f"• <code>/img [query]</code> - Image search\n"
+        f"• <code>/vid [query]</code> - Video search\n"
+        f"• <code>/news [query]</code> - News search\n\n"
+        f"<b>💡 Smart Features:</b>\n"
+        f"• In groups, use 'dummy [query] [type]' (e.g., 'dummy cats image')\n"
+        f"• Pagination with Previous/Next buttons\n"
+        f"• Rate limiting: 3 searches per minute\n"
+        f"• Individual session management per user per chat\n\n"
+        f"<b>📱 Get Started:</b>\n"
+        f"Try <code>/web python programming</code> or add me to your group!"
+    )
+}
+
+HELP_MESSAGES = {
+    "help_text": (
+        f"<b>🆘 Help - Dummy Pawn Bot</b>\n\n"
+        f"<b>🔍 Search Commands:</b>\n"
+        f"• <code>/web [query]</code> - Search the web\n"
+        f"• <code>/img [query]</code> - Search for images\n"
+        f"• <code>/vid [query]</code> - Search for videos\n"
+        f"• <code>/news [query]</code> - Search for news\n\n"
+        f"<b>🤖 Smart Triggers:</b>\n"
+        f"• <b>Private chats:</b> Just type your query + search type\n"
+        f"  Example: <code>cats image</code> or <code>python programming</code>\n\n"
+        f"• <b>Group chats:</b> Use 'dummy' prefix\n"
+        f"  Example: <code>dummy cats image</code> or <code>dummy bitcoin news</code>\n\n"
+        f"<b>🎯 Features:</b>\n"
+        f"• Navigate results with Previous/Next buttons\n"
+        f"• Each user has separate search sessions per chat\n"
+        f"• Rate limiting: 3 searches per minute\n"
+        f"• Rich media display with thumbnails"
+    )
+}
+
+ERROR_MESSAGES = {
+    "rate_limit": "⏰ Rate limit exceeded. You can make 3 searches per minute. Please wait.",
+    "empty_query": "😕 Please provide a search query.",
+    "no_data": "💔 No data received from API. Please try again later.",
+    "no_results": "💔 No {mode} results found for '{query}'.",
+    "no_more_results": "💔 No more results available.",
+    "send_failed": "🙁 Failed to send result. Please try again.",
+    "invalid_callback": "🙁 Invalid callback query.",
+    "invalid_data": "🙁 Invalid callback data.",
+    "invalid_ids": "🙁 Invalid callback IDs.",
+    "wrong_user": "😑 This button isn't for you. Fool!",
+    "wrong_chat": "🙅‍♂️ This button isn't for this chat!",
+    "cannot_delete": "🙁 Cannot delete message.",
+    "delete_failed": "🙁 Failed to delete message.",
+    "no_cache": "❗ No cached search found. Please search again.",
+    "no_more": "🙌 No more results available buddy.",
+    "first_result": "😖 This is the first result dumbass.",
+    "cannot_edit": "🤐 Cannot edit this message.",
+    "edit_failed": "🤐 Failed to update message."
+}
+
+SUCCESS_MESSAGES = {
+    "updated": "❤️ Updated",
+    "deleted": "❤️ Message deleted",
+    "already_showing": "❤️ Already showing this result"
+}
+
+GROUP_MESSAGES = {
+    "usage_error": "❗ Usage: dummy [query] [type]\nExample: dummy cats image",
+    "unknown_type": "❗ Unknown search type '{search_type}'\nAvailable types: web, image, video, news"
+}
+
+BUTTON_TEXTS = {
+    "previous": "Previous",
+    "next": "Next",
+    "close": "Close",
+    "updates": "Updates",
+    "support": "Support",
+    "add_to_group": "Add Me To Your Group"
+}
+
+BOT_COMMANDS = [
+    {"command": "start", "description": "🕹️ Start the bot"},
+    {"command": "help", "description": "💌 Get usage instructions"},
+    {"command": "web", "description": "🌐 Search the web"},
+    {"command": "img", "description": "🏜️ Search for images"},
+    {"command": "vid", "description": "🎬 Search for videos"},
+    {"command": "news", "description": "📰 Search for news"}
+]
+
+SEARCH_TYPE_MAPPING = {
+    "web": "web",
+    "site": "web",
+    "website": "web",
+    "link": "web",
+    "search": "web",
+    "google": "web",
+
+    "image": "img",
+    "img": "img",
+    "pic": "img",
+    "pics": "img",
+    "picture": "img",
+    "pictures": "img",
+    "photo": "img",
+    "photos": "img",
+    "wallpaper": "img",
+    "snapshot": "img",
+    "pfp": "img",
+    "dp": "img",
+
+    "video": "vid",
+    "vid": "vid",
+    "clip": "vid",
+    "movie": "vid",
+    "film": "vid",
+    "short": "vid",
+    "reel": "vid",
+    "scene": "vid",
+
+    "news": "news",
+    "headline": "news",
+    "headlines": "news",
+    "update": "news",
+    "updates": "news",
+    "report": "news",
+    "breaking": "news",
+    "alert": "news"
+}
+
+MODE_EMOJIS = {
+    "web": "🌐",
+    "news": "📰",
+    "vid": "🎥",
+    "img": "🖼️"
+}
+
+RESULTS_KEY_MAPPING = {
+    "web": "organic",
+    "img": "images",
+    "vid": "videos",
+    "news": "news"
 }
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -59,22 +204,18 @@ user_search_cache = {}
 rate_limit = {}
 
 def get_inline_keyboard(user_id: int, chat_id: int):
-    """
-    Generate inline keyboard with callback_data including user_id and chat_id,
-    so each user has isolated sessions per chat.
-    """
+    """Generate inline keyboard with callback_data including user_id and chat_id"""
     log_info(f"Generating inline keyboard for user_id={user_id}, chat_id={chat_id}")
-    # callback_data format: e.g. "prev_{user_id}_{chat_id}", "next_{user_id}_{chat_id}", "close_{user_id}_{chat_id}"
     prefix_prev = f"prev_{user_id}_{chat_id}"
     prefix_next = f"next_{user_id}_{chat_id}"
     prefix_close = f"close_{user_id}_{chat_id}"
     return InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="Previous", callback_data=prefix_prev),
-            InlineKeyboardButton(text="Next", callback_data=prefix_next)
+            InlineKeyboardButton(text=BUTTON_TEXTS["previous"], callback_data=prefix_prev),
+            InlineKeyboardButton(text=BUTTON_TEXTS["next"], callback_data=prefix_next)
         ],
         [
-            InlineKeyboardButton(text="Close", callback_data=prefix_close)
+            InlineKeyboardButton(text=BUTTON_TEXTS["close"], callback_data=prefix_close)
         ]
     ])
 
@@ -100,10 +241,7 @@ async def query_serper(mode: str, query: str):
         return {}
 
 def check_rate_limit(user_id: int) -> bool:
-    """
-    Check if user has exceeded rate limit (3 searches per minute)
-    Returns True if within limit, False if exceeded
-    """
+    """Check if user has exceeded rate limit (3 searches per minute)"""
     now = datetime.now()
     if user_id not in rate_limit:
         rate_limit[user_id] = []
@@ -121,64 +259,47 @@ def check_rate_limit(user_id: int) -> bool:
     return True
 
 async def send_result(msg: types.Message, mode: str, index: int = 0, query_override: str = ""):
-    """
-    msg: the original message object
-    mode: "web", "img", "vid", "news"
-    index: result index for pagination
-    query_override: if provided, use this string as the search query instead of msg.text
-    """
+    """Send search result with pagination"""
     chat_id = msg.chat.id
     user_id = msg.from_user.id if msg.from_user else 0
     log_info(f"send_result called for chat_id={chat_id}, user_id={user_id}, mode='{mode}', index={index}")
     
     # Check rate limit
     if not check_rate_limit(user_id):
-        await msg.answer("⏰ Rate limit exceeded. You can make 3 searches per minute. Please wait.", 
-                        reply_to_message_id=msg.message_id)
+        await msg.answer(ERROR_MESSAGES["rate_limit"], reply_to_message_id=msg.message_id)
         log_warn(f"Rate limit exceeded for user {user_id}")
         return
     
-    # Determine the query text:
+    # Determine the query text
     if query_override:
         query = query_override.strip()
     else:
         text = msg.text or ""
-        # In group, msg.text might be like "dummy naruto image": but for send_result, query_override should strip "dummy"
-        # In private or command, msg.text might be "/img naruto"
-        # A robust way: if msg.text starts with a slash command, split by space:
         if text.startswith("/"):
             parts = text.split(" ", 1)
             query = parts[1].strip() if len(parts) > 1 else ""
         else:
-            # For private smart trigger, text is full, e.g. "naruto image"
             query = text.strip()
     
     if not query or query.lower().strip() == "dummy":
-        await msg.answer("😕 Please provide a search query.", reply_to_message_id=msg.message_id)
+        await msg.answer(ERROR_MESSAGES["empty_query"], reply_to_message_id=msg.message_id)
         log_warn(f"Empty or invalid query from user {user_id} in chat {chat_id}")
         return
 
     data = await query_serper(mode, query)
     if not data:
-        await msg.answer("💔 No data received from API. Please try again later.", reply_to_message_id=msg.message_id)
+        await msg.answer(ERROR_MESSAGES["no_data"], reply_to_message_id=msg.message_id)
         log_warn(f"No data received from API for query '{query}' user {user_id} in chat {chat_id}")
         return
 
-    results_key = {
-        "web": "organic",
-        "img": "images",
-        "vid": "videos",
-        "news": "news"
-    }[mode]
-
+    results_key = RESULTS_KEY_MAPPING[mode]
     results = data.get(results_key, [])
     if not results:
-        await msg.answer(f"💔 No {mode} results found for '{query}'.", reply_to_message_id=msg.message_id)
+        await msg.answer(ERROR_MESSAGES["no_results"].format(mode=mode, query=query), reply_to_message_id=msg.message_id)
         log_warn(f"No {mode} results found for query '{query}' user {user_id} in chat {chat_id}")
         return
 
-    # Cache under (user_id, chat_id) - each user gets isolated sessions per chat
-    # Include timestamp to make sessions unique per search
+    # Cache under (user_id, chat_id)
     session_timestamp = datetime.now().strftime("%H%M%S")
     cache_key = (user_id, chat_id)
     user_search_cache[cache_key] = {
@@ -192,7 +313,7 @@ async def send_result(msg: types.Message, mode: str, index: int = 0, query_overr
     log_info(f"Cached search for user {user_id} in chat {chat_id}, mode '{mode}', query '{query}', total results {len(results)}")
 
     if index >= len(results):
-        await msg.answer("💔 No more results available.", reply_to_message_id=msg.message_id)
+        await msg.answer(ERROR_MESSAGES["no_more_results"], reply_to_message_id=msg.message_id)
         log_warn(f"Index {index} out of range for results, user {user_id} in chat {chat_id}")
         return
 
@@ -201,10 +322,9 @@ async def send_result(msg: types.Message, mode: str, index: int = 0, query_overr
 
     try:
         if mode == "img":
-            # result["imageUrl"], result["title"]
             image_url = result.get("imageUrl", "")
             title = result.get("title", "")
-            caption = f"🖼️ <b>{title}</b>\n\n📊 Result {index + 1} of {len(results)}\n🔍 Query: {query}\n👤 Your session: {session_timestamp}"
+            caption = f"{MODE_EMOJIS['img']} <b>{title}</b>\n\n📊 Result {index + 1} of {len(results)}\n🔍 Query: {query}\n👤 Your session: {session_timestamp}"
             await msg.answer_photo(image_url, caption=caption, reply_markup=keyboard, reply_to_message_id=msg.message_id)
             log_success(f"Sent image result to user {user_id} in chat {chat_id}")
         else:
@@ -213,14 +333,7 @@ async def send_result(msg: types.Message, mode: str, index: int = 0, query_overr
             snippet = result.get("snippet") or result.get("description") or "No description available."
             photo_url = result.get("thumbnailUrl") or result.get("imageUrl")
             
-            # Emoji mapping for different modes
-            mode_emojis = {
-                "web": "🌐",
-                "news": "📰",
-                "vid": "🎥"
-            }
-            emoji = mode_emojis.get(mode, "🔍")
-            
+            emoji = MODE_EMOJIS.get(mode, "🔍")
             caption = f'{emoji} <a href="{link}"><b>{title}</b></a>\n\n{snippet}\n\n📊 Result {index + 1} of {len(results)}\n🔍 Query: {query}\n👤 Your session: {session_timestamp}'
             
             if photo_url:
@@ -231,26 +344,23 @@ async def send_result(msg: types.Message, mode: str, index: int = 0, query_overr
                 log_success(f"Sent text result to user {user_id} in chat {chat_id}")
     except Exception as e:
         log_error(f"Failed to send result message for chat {chat_id}, user {user_id}: {e}")
-        await msg.answer("🙁 Failed to send result. Please try again.", reply_to_message_id=msg.message_id)
+        await msg.answer(ERROR_MESSAGES["send_failed"], reply_to_message_id=msg.message_id)
 
 @router.callback_query(lambda c: c.data and (
     c.data.startswith("next_") or c.data.startswith("prev_") or c.data.startswith("close_")
 ))
 async def callback_handler(query: CallbackQuery):
-    """
-    Callback data format: "next_{user_id}_{chat_id}", "prev_{user_id}_{chat_id}", "close_{user_id}_{chat_id}"
-    """
+    """Handle pagination callbacks"""
     data = query.data or ""
     if not query.message or not query.from_user:
-        await query.answer("🙁 Invalid callback query.", show_alert=True)
+        await query.answer(ERROR_MESSAGES["invalid_callback"], show_alert=True)
         return
         
     log_info(f"Received callback: {data} from user {query.from_user.id} in chat {query.message.chat.id}")
     parts = data.split("_")
-    # Expect ["next", user_id_str, chat_id_str] or ["prev", user_id_str, chat_id_str] or ["close", user_id_str, chat_id_str]
     if len(parts) != 3:
         log_warn(f"Unexpected callback_data format: {data}")
-        await query.answer("🙁 Invalid callback data.", show_alert=True)
+        await query.answer(ERROR_MESSAGES["invalid_data"], show_alert=True)
         return
 
     action, user_id_str, chat_id_str = parts
@@ -259,17 +369,17 @@ async def callback_handler(query: CallbackQuery):
         chat_id = int(chat_id_str)
     except ValueError:
         log_warn(f"Non-integer IDs in callback_data: {data}")
-        await query.answer("🙁 Invalid callback IDs.", show_alert=True)
+        await query.answer(ERROR_MESSAGES["invalid_ids"], show_alert=True)
         return
 
     # Verify correct user and chat
     if query.from_user.id != user_id:
-        await query.answer("😑 This button isn't for you. Fool!", show_alert=True)
+        await query.answer(ERROR_MESSAGES["wrong_user"], show_alert=True)
         log_warn(f"User {query.from_user.id} tried to press button for user {user_id}")
         return
     
     if query.message.chat.id != chat_id:
-        await query.answer("🙅‍♂️ This button isn't for this chat!", show_alert=True)
+        await query.answer(ERROR_MESSAGES["wrong_chat"], show_alert=True)
         log_warn(f"Callback for chat {chat_id} used in chat {query.message.chat.id}")
         return
 
@@ -278,45 +388,40 @@ async def callback_handler(query: CallbackQuery):
         try:
             if hasattr(query.message, 'delete'):
                 await query.message.delete()
-                await query.answer("❤️ Message deleted")
+                await query.answer(SUCCESS_MESSAGES["deleted"])
                 log_success(f"Message deleted by user {user_id}")
             else:
-                await query.answer("🙁 Cannot delete message.")
+                await query.answer(ERROR_MESSAGES["cannot_delete"])
         except Exception as e:
             log_error(f"Failed to delete message for user {user_id}: {e}")
-            await query.answer("🙁 Failed to delete message.")
+            await query.answer(ERROR_MESSAGES["delete_failed"])
         return
 
     # Retrieve cache for this specific user and chat
     cache_key = (user_id, chat_id)
     cache = user_search_cache.get(cache_key)
     if not cache:
-        await query.answer("❗ No cached search found. Please search again.", show_alert=True)
+        await query.answer(ERROR_MESSAGES["no_cache"], show_alert=True)
         log_warn(f"No cached search for user {user_id} in chat {chat_id} on callback {data}")
         return
 
     mode = cache["mode"]
     data_full = cache["data"]
     index = cache["index"]
-    results_key = {
-        "web": "organic",
-        "img": "images",
-        "vid": "videos",
-        "news": "news"
-    }[mode]
+    results_key = RESULTS_KEY_MAPPING[mode]
     results = data_full.get(results_key, [])
 
     # Compute new index
     if action == "next":
         new_index = index + 1
         if new_index >= len(results):
-            await query.answer("🙌 No more results available buddy.", show_alert=True)
+            await query.answer(ERROR_MESSAGES["no_more"], show_alert=True)
             log_warn(f"User {user_id} reached end of results")
             return
     elif action == "prev":
         new_index = index - 1
         if new_index < 0:
-            await query.answer("😖 This is the first result dumbass.", show_alert=True)
+            await query.answer(ERROR_MESSAGES["first_result"], show_alert=True)
             log_warn(f"User {user_id} tried to go before first result")
             return
     else:
@@ -335,17 +440,17 @@ async def callback_handler(query: CallbackQuery):
                 title = result.get("title", "")
                 session_info = cache.get("timestamp", "")
                 query_info = cache.get("query", "")
-                caption = f"🖼️ <b>{title}</b>\n\n📊 Result {new_index + 1} of {len(results)}\n🔍 Query: {query_info}\n👤 Your session: {session_info}"
+                caption = f"{MODE_EMOJIS['img']} <b>{title}</b>\n\n📊 Result {new_index + 1} of {len(results)}\n🔍 Query: {query_info}\n👤 Your session: {session_info}"
                 try:
                     await query.message.edit_media(
                         types.InputMediaPhoto(media=image_url, caption=caption),
                         reply_markup=keyboard
                     )
                     log_success(f"Edited image media for user {user_id}")
-                    await query.answer("❤️ Updated")
+                    await query.answer(SUCCESS_MESSAGES["updated"])
                 except Exception as edit_e:
                     if "message is not modified" in str(edit_e):
-                        await query.answer("❤️ Already showing this result")
+                        await query.answer(SUCCESS_MESSAGES["already_showing"])
                         log_info(f"Duplicate content for user {user_id}, index {new_index}")
                     else:
                         raise edit_e
@@ -355,14 +460,7 @@ async def callback_handler(query: CallbackQuery):
                 snippet = result.get("snippet") or result.get("description") or "No description available."
                 photo_url = result.get("thumbnailUrl") or result.get("imageUrl")
                 
-                # Emoji mapping for different modes
-                mode_emojis = {
-                    "web": "🌐",
-                    "news": "📰",
-                    "vid": "🎥"
-                }
-                emoji = mode_emojis.get(mode, "🔍")
-                
+                emoji = MODE_EMOJIS.get(mode, "🔍")
                 session_info = cache.get("timestamp", "")
                 query_info = cache.get("query", "")
                 caption = f'{emoji} <a href="{link}"><b>{title}</b></a>\n\n{snippet}\n\n📊 Result {new_index + 1} of {len(results)}\n🔍 Query: {query_info}\n👤 Your session: {session_info}'
@@ -377,18 +475,18 @@ async def callback_handler(query: CallbackQuery):
                     else:
                         await query.message.edit_text(caption, reply_markup=keyboard)
                         log_success(f"Edited text media for user {user_id}")
-                    await query.answer("❤️ Updated")
+                    await query.answer(SUCCESS_MESSAGES["updated"])
                 except Exception as edit_e:
                     if "message is not modified" in str(edit_e):
-                        await query.answer("❤️ Already showing this result")
+                        await query.answer(SUCCESS_MESSAGES["already_showing"])
                         log_info(f"Duplicate content for user {user_id}, index {new_index}")
                     else:
                         raise edit_e
         else:
-            await query.answer("🤐 Cannot edit this message.")
+            await query.answer(ERROR_MESSAGES["cannot_edit"])
     except Exception as e:
         log_error(f"Failed to edit message for user {user_id}: {e}")
-        await query.answer("🤐 Failed to update message.")
+        await query.answer(ERROR_MESSAGES["edit_failed"])
 
 @router.message(Command("start"))
 async def cmd_start(msg: types.Message):
@@ -396,31 +494,15 @@ async def cmd_start(msg: types.Message):
     log_info(f"Start command invoked by user {user_id}")
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="Updates", url=UPDATES_CHANNEL),
-            InlineKeyboardButton(text="Support", url=SUPPORT_GROUP)
+            InlineKeyboardButton(text=BUTTON_TEXTS["updates"], url=UPDATES_CHANNEL),
+            InlineKeyboardButton(text=BUTTON_TEXTS["support"], url=SUPPORT_GROUP)
         ],
         [
-            InlineKeyboardButton(text="Add Me To Your Group", url=f"https://t.me/{BOT_USERNAME}?startgroup=true")
+            InlineKeyboardButton(text=BUTTON_TEXTS["add_to_group"], url=f"https://t.me/{BOT_USERNAME}?startgroup=true")
         ]
     ])
     try:
-        await msg.answer(
-            f"<b>👋 Welcome to <u>Dummy Pawn</u>!</b>\n\n"
-            f"<i>I'm your personal assistant for quick and accurate searches.</i>\n\n"
-            f"<b>🔍 Available Commands:</b>\n"
-            f"• <code>/web [query]</code> - Web search\n"
-            f"• <code>/img [query]</code> - Image search\n"
-            f"• <code>/vid [query]</code> - Video search\n"
-            f"• <code>/news [query]</code> - News search\n\n"
-            f"<b>💡 Smart Features:</b>\n"
-            f"• In groups, use 'dummy [query] [type]' (e.g., 'dummy cats image')\n"
-            f"• Pagination with Previous/Next buttons\n"
-            f"• Rate limiting: 3 searches per minute\n"
-            f"• Individual session management per user per chat\n\n"
-            f"<b>📱 Get Started:</b>\n"
-            f"Try <code>/web python programming</code> or add me to your group!",
-            reply_markup=keyboard
-        )
+        await msg.answer(START_MESSAGES["welcome"], reply_markup=keyboard)
         log_success(f"Start message sent to user {user_id}")
     except Exception as e:
         log_error(f"Failed to send start message: {e}")
@@ -429,26 +511,8 @@ async def cmd_start(msg: types.Message):
 async def cmd_help(msg: types.Message):
     user_id = msg.from_user.id if msg.from_user else 0
     log_info(f"Help command invoked by user {user_id}")
-    help_text = (
-        f"<b>🆘 Help - Dummy Pawn Bot</b>\n\n"
-        f"<b>🔍 Search Commands:</b>\n"
-        f"• <code>/web [query]</code> - Search the web\n"
-        f"• <code>/img [query]</code> - Search for images\n"
-        f"• <code>/vid [query]</code> - Search for videos\n"
-        f"• <code>/news [query]</code> - Search for news\n\n"
-        f"<b>🤖 Smart Triggers:</b>\n"
-        f"• <b>Private chats:</b> Just type your query + search type\n"
-        f"  Example: <code>cats image</code> or <code>python programming</code>\n\n"
-        f"• <b>Group chats:</b> Use 'dummy' prefix\n"
-        f"  Example: <code>dummy cats image</code> or <code>dummy bitcoin news</code>\n\n"
-        f"<b>🎯 Features:</b>\n"
-        f"• Navigate results with Previous/Next buttons\n"
-        f"• Each user has separate search sessions per chat\n"
-        f"• Rate limiting: 3 searches per minute\n"
-        f"• Rich media display with thumbnails"
-    )
     try:
-        await msg.answer(help_text)
+        await msg.answer(HELP_MESSAGES["help_text"])
         log_success(f"Help message sent to user {user_id}")
     except Exception as e:
         log_error(f"Failed to send help message: {e}")
@@ -491,66 +555,22 @@ async def handle_group_message(msg: types.Message):
     # Parse: "dummy [query] [type]"
     parts = text.split()
     if len(parts) < 3:
-        await msg.answer("❗ Usage: dummy [query] [type]\nExample: dummy cats image", 
-                         reply_to_message_id=msg.message_id)
+        await msg.answer(GROUP_MESSAGES["usage_error"], reply_to_message_id=msg.message_id)
         return
 
     # Last word is the search type, everything in between is the query
     search_type = parts[-1]
     query = " ".join(parts[1:-1])
 
-    # Map search types
-    type_mapping = {
-        "web": "web",
-        "site": "web",
-        "website": "web",
-        "link": "web",
-        "search": "web",
-        "google": "web",
-
-        "image": "img",
-        "img": "img",
-        "pic": "img",
-        "pics": "img",
-        "picture": "img",
-        "pictures": "img",
-        "photo": "img",
-        "photos": "img",
-        "wallpaper": "img",
-        "snapshot": "img",
-        "pfp": "img",
-        "dp": "img",
-
-        "video": "vid",
-        "vid": "vid",
-        "clip": "vid",
-        "movie": "vid",
-        "film": "vid",
-        "short": "vid",
-        "reel": "vid",
-        "scene": "vid",
-
-        "news": "news",
-        "headline": "news",
-        "headlines": "news",
-        "update": "news",
-        "updates": "news",
-        "report": "news",
-        "breaking": "news",
-        "alert": "news"
-    }
-
-    mode = type_mapping.get(search_type)
+    mode = SEARCH_TYPE_MAPPING.get(search_type)
     if not mode:
         await msg.answer(
-            f"❗ Unknown search type '{search_type}'\n"
-            f"Available types: web, image, video, news",
+            GROUP_MESSAGES["unknown_type"].format(search_type=search_type),
             reply_to_message_id=msg.message_id
         )
         return
 
     await send_result(msg, mode, query_override=query)
-
 
 @router.message(lambda msg: msg.chat.type == ChatType.PRIVATE)
 async def handle_private_message(msg: types.Message):
@@ -576,47 +596,7 @@ async def handle_private_message(msg: types.Message):
 
     # Check if last word is a search type
     last_word = parts[-1]
-    type_mapping = {
-        "web": "web",
-        "site": "web",
-        "website": "web",
-        "link": "web",
-        "search": "web",
-        "google": "web",
-
-        "image": "img",
-        "img": "img",
-        "pic": "img",
-        "pics": "img",
-        "picture": "img",
-        "pictures": "img",
-        "photo": "img",
-        "photos": "img",
-        "wallpaper": "img",
-        "snapshot": "img",
-        "pfp": "img",
-        "dp": "img",
-
-        "video": "vid",
-        "vid": "vid",
-        "clip": "vid",
-        "movie": "vid",
-        "film": "vid",
-        "short": "vid",
-        "reel": "vid",
-        "scene": "vid",
-
-        "news": "news",
-        "headline": "news",
-        "headlines": "news",
-        "update": "news",
-        "updates": "news",
-        "report": "news",
-        "breaking": "news",
-        "alert": "news"
-    }
-
-    mode = type_mapping.get(last_word)
+    mode = SEARCH_TYPE_MAPPING.get(last_word)
     if mode:
         # Query is everything except the last word
         query = " ".join(parts[:-1])
@@ -628,17 +608,13 @@ async def handle_private_message(msg: types.Message):
 async def set_bot_commands():
     """Set bot commands for the menu"""
     commands = [
-        BotCommand(command="start", description="🕹️ Start the bot"),
-        BotCommand(command="help", description="💌 Get usage instructions"),
-        BotCommand(command="web", description="🌐 Search the web"),
-        BotCommand(command="img", description="🏜️ Search for images"),
-        BotCommand(command="vid", description="🎬 Search for videos"),
-        BotCommand(command="news", description="📰 Search for news"),
+        BotCommand(command=cmd["command"], description=cmd["description"])
+        for cmd in BOT_COMMANDS
     ]
     await bot.set_my_commands(commands)
     log_success("Bot commands set successfully")
 
-# ─── Dummy HTTP Server for Deployment Compatibility ────────────────────────
+# Dummy HTTP Server for Deployment Compatibility
 class DummyHandler(BaseHTTPRequestHandler):
     """Simple HTTP handler for health checks and deployment compatibility"""
 
