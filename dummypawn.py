@@ -692,6 +692,42 @@ async def cmd_news(msg: types.Message):
     user_id = msg.from_user.id if msg.from_user else 0
     log_info(f"News search command from user {user_id}")
     await send_result(msg, "news")
+    
+@router.message(Command("ping"))
+async def cmd_ping(msg: types.Message):
+    """Handle /ping command - shows latency with hyperlinked Pong!"""
+    user_id = msg.from_user.id if msg.from_user else 0
+    log_info(f"Ping command from user {user_id}")
+    
+    try:
+        # Record start time
+        start_time = datetime.now()
+        
+        # Send initial "Pinging..." message
+        ping_msg = await msg.answer("🛰️ Pinging...", reply_to_message_id=msg.message_id)
+        
+        # Calculate response time
+        end_time = datetime.now()
+        latency = (end_time - start_time).total_seconds() * 1000
+        
+        # Edit the message to show Pong! with hyperlink
+        pong_text = f'🏓 <a href="{SUPPORT_GROUP}">Pong!</a> {latency:.2f}ms'
+        
+        await ping_msg.edit_text(
+            pong_text,
+            parse_mode=ParseMode.HTML,
+            disable_web_page_preview=True
+        )
+        
+        log_success(f"Ping response sent to user {user_id} with latency {latency:.2f}ms")
+        
+    except Exception as e:
+        log_error(f"Failed to send ping response to user {user_id}: {e}")
+        # Fallback response if edit fails
+        try:
+            await msg.answer(f"🏓 Pong! Error measuring latency", reply_to_message_id=msg.message_id)
+        except Exception as e2:
+            log_error(f"Failed to send ping fallback to user {user_id}: {e2}")
 
 # Smart trigger for groups (responds to "dummy" keyword)
 @router.message(lambda msg: msg.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP])
